@@ -1,0 +1,188 @@
+<div class="users-container">
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Total Users</h3>
+          <p class="stat-value">{{userStats.totalUsers | number}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Active Users</h3>
+          <p class="stat-value">{{userStats.activeUsers | number}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="stat-info">
+          <h3>New Today</h3>
+          <p class="stat-value">{{userStats.newUsersToday | number}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Avg. Spending</h3>
+          <p class="stat-value">${{userStats.averageSpending | number:'1.2-2'}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="section-header">
+    <div class="header-content">
+      <h1>Users Management</h1>
+      <p class="text-muted">Manage and monitor user accounts</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="exportUsers()">
+        <i class="fas fa-download"></i>
+        Export Users
+      </button>
+      <button class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Add New User
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search users by name, email, or location..."
+        [value]="searchTerm"
+        (input)="onSearch($event)"
+      >
+    </div>
+
+    <div class="filter-group">
+      <select class="filter-select" (change)="onTimeframeFilter($event)">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+
+      <select class="filter-select" (change)="onRoleFilter($event)">
+        <option value="all">All Roles</option>
+        <option *ngFor="let role of roles" [value]="role">{{role}}</option>
+      </select>
+
+      <select class="filter-select" (change)="onStatusFilter($event)">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="pending">Pending</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-container">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Location</th>
+          <th>Join Date</th>
+          <th>Orders</th>
+          <th>Total Spent</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of paginatedUsers">
+          <td>
+            <div class="user-cell">
+              <img [src]="user.avatar" [alt]="user.name" class="user-avatar">
+              <div class="user-info">
+                <span class="user-name">
+                  {{user.name}}
+                  <i class="fas fa-check-circle verified-badge" *ngIf="user.verified"></i>
+                </span>
+                <span class="user-email">{{user.email}}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="role-badge" [class]="user.role.toLowerCase()">{{user.role}}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class]="user.status">
+              <i class="fas fa-circle"></i>
+              {{user.status}}
+            </span>
+          </td>
+          <td>
+            <span class="location">
+              <i class="fas fa-map-marker-alt"></i>
+              {{user.location}}
+            </span>
+          </td>
+          <td>{{user.joinDate | date:'mediumDate'}}</td>
+          <td>{{user.orders | number}}</td>
+          <td>${{user.totalSpent | number:'1.2-2'}}</td>
+          <td class="actions-cell">
+            <button class="action-btn" title="View Details">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn" title="Edit User">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete" title="Delete User">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <div class="pagination-info">
+      Showing {{(currentPage - 1) * itemsPerPage + 1}} to
+      {{Math.min(currentPage * itemsPerPage, filteredUsers.length)}} of
+      {{filteredUsers.length}} users
+    </div>
+    <div class="pagination-controls">
+      <button class="page-btn" [disabled]="currentPage === 1" (click)="setPage(currentPage - 1)">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="page-btn"
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1"
+              (click)="setPage(i + 1)">
+        {{i + 1}}
+      </button>
+      <button class="page-btn" [disabled]="currentPage === totalPages" (click)="setPage(currentPage + 1)">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

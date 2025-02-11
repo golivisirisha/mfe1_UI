@@ -1,0 +1,92 @@
+<div class="dashboard-container">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <h1>Welcome Back, Admin!</h1>
+    <p class="text-muted">Here's what's happening with your store today.</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats" [ngClass]="'border-' + stat.color">
+      <div class="stat-icon" [ngClass]="'bg-' + stat.color + '-light'">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ stat.title }}</h3>
+        <div class="stat-value">
+          {{ stat.value | number }}
+          <span class="trend" [ngClass]="stat.trend >= 0 ? 'positive' : 'negative'">
+            <i [class]="stat.trend >= 0 ? 'fa-solid fa-arrow-up' : 'fa-solid fa-arrow-down'"></i>
+            {{ Math.abs(stat.trend) }}%
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Recent Orders -->
+    <div class="card orders-card">
+      <div class="card-header">
+        <h2>Recent Orders</h2>
+        <button class="btn btn-primary btn-sm">View All</button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of recentOrders">
+                <td>{{ order.id }}</td>
+                <td>{{ order.customer }}</td>
+                <td>{{ order.date | date:'short' }}</td>
+                <td>${{ order.amount | number:'1.2-2' }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="order.status.toLowerCase()">
+                    {{ order.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card quick-actions-card">
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="card-body">
+        <div class="quick-actions-grid">
+          <button class="action-btn">
+            <i class="fa-solid fa-plus"></i>
+            Add Product
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            New User
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-tag"></i>
+            Create Offer
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-file-export"></i>
+            Export Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
